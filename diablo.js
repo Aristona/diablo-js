@@ -2,77 +2,226 @@
 
 var imageCount=0;
 function loadImage(url,angles,steps,offsetX){
+    imageCount++;
     var i=new Image();
     i.onload=function(){
         imageCount--;
         i.offsetX=offsetX?((i.height/angles)>>2):0;
     }
     i.src=url;
-    imageCount++;
     if(typeof angles!="undefined" && typeof steps!="undefined"){
         i.angles=angles;
         i.steps=steps;
     }
     return i;
-};
+}
+function load(img,callback){
+    if(img.complete)callback();
+    else img.addEventListener('load',callback,false);
+}
 
-var tw=512, th=tw/2, s=tw*0.705, a=Math.PI/4;
-var asin=acos=Math.sin(a);
-var floorMap=[
-    "000000000000000000000000000000000000000000000000".split(""),
-    "011110000000000000000000000000000000000000000000".split(""),
-    "000210000000000000000000000000000000000000000000".split(""),
-    "000111111111111111110000000000000000000000000000".split(""),
-    "000000001000000001000000000000000000000000000000".split(""),
-    "000000001000000001111111100000000000000000000000".split(""),
-    "000000001000000000000000011111100000000000000000".split(""),
-    "000000001000000000000000000000000000000000000000".split(""),
-    "000000001100000000000000000000000000000000000000".split(""),
-    "000000001111111000000000000000000000000000000000".split(""),
-    "000000000100011000000000000000000000000000000000".split(""),
-    "000000000100001000000000000000000000000000000000".split(""),
-    "000000000100002000000000000000000000000000000000".split(""),
-    "000000000100000000000000000000000000000000000000".split(""),
-    "000000000110000000000000000000000000000000000000".split(""),
-    "000002111111112000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-    "000000000000000000000000000000000000000000000000".split(""),
-];
+var level = {
+    floor:{
+        prefix:"dttool/output/1/",
+        map:[
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0, 756, 756, 756, 756, 756, 756,   0,   0,   0,],
+            [   0, 756, 756, 756, 756, 756, 756, 756, 756, 756, 756,],
+            [   0, 756, 756, 756, 756, 756, 756, 756,1140, 756, 756,],
+            [   0, 756, 756, 756, 756, 756, 756, 756, 756, 756, 756,],
+            [   0, 756, 756, 756, 756, 756, 756, 756, 756, 756, 756,],
+            [   0, 756, 756, 756, 756, 756, 756, 756, 756, 756, 756,],
+            [   0, 756, 756, 756, 756, 756, 756, 756, 756, 756, 756,],
+            [   0, 756, 756,1140, 756, 756, 756, 756, 756, 756, 756,],
+            [   0, 756, 756, 660, 660, 372, 756, 756, 756, 756, 756,],
+            [   0, 756, 756, 756, 756, 756, 756, 756, 756, 756, 756,],
+            [   0, 756, 756,1908, 756, 756, 756, 756, 756, 756, 756,],
+            [   0,   0, 756, 756, 756, 756, 756, 756,   0,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+        ],
+        header:{
+            372:false,
+            660:false,
+            756:false,
+            1140:false,
+            1908:false,  
+        }
+    },  
+    wall:{
+        prefix:"dttool/output/0/",
+        map:[
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0, 948, 372, 372, 372, 948, 372,2100,   0,   0,],
+            [   0, 948,1140,   0,   0,   0, 468,   0,2004, 372, 948,],
+            [   0, 468,   0,   0,   0,   0,1524,   0,   0,   0, 468,],
+            [   0, 468,   0,   0,   0,   0,1428,   0,   0,   0, 468,],
+            [   0, 468,   0,   0,   0,   0, 468,   0,   0,   0, 468,],
+            [   0, 468,   0,   0,   0,   0, 468,   0,   0,   0,1524,],
+            [   0, 948, 372, 372, 372, 372,1140,   0,   0,   0,1428,],
+            [   0, 468,   0,   0,   0,   0,   0,   0,   0,   0, 468,],
+            [   0, 468,   0,   0,   0,   0,   0,   0,   0,   0, 468,],
+            [   0, 468,   0,   0,   0,   0,   0,   0,   0,   0, 468,],
+            [   0, 468,   0,   0,   0,   0,   0,   0,   0,   0, 468,],
+            [   0,2004,2100,   0,   0,   0,   0,   0, 948, 372,2004,],
+            [   0,   0,2004, 372, 372, 372, 372, 372,1140,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+        ],
+        header:{
+            276:{orientation:8, main_index:5, sub_index:2, direction:1, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,]},
+            372:{orientation:2, main_index:5, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,]},
+            468:{orientation:1, main_index:5, sub_index:0, direction:1, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            564:{orientation:2, main_index:5, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,]},
+            660:{orientation:2, main_index:5, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,]},
+            756:{orientation:1, main_index:5, sub_index:0, direction:1, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            852:{orientation:1, main_index:5, sub_index:0, direction:1, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            948:{orientation:3, main_index:5, sub_index:0, direction:3, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,]},
+            1044:{orientation:4, main_index:5, sub_index:0, direction:3, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,]},
+            1140:{orientation:7, main_index:5, sub_index:0, direction:4, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            1236:{orientation:9, main_index:5, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,]},
+            1332:{orientation:9, main_index:5, sub_index:1, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,]},
+            1428:{orientation:8, main_index:5, sub_index:0, direction:1, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,]},
+            1524:{orientation:8, main_index:5, sub_index:1, direction:1, walk:[0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            1620:{orientation:9, main_index:5, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,]},
+            1716:{orientation:9, main_index:5, sub_index:1, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,]},
+            1812:{orientation:8, main_index:5, sub_index:1, direction:1, walk:[0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            1908:{orientation:8, main_index:5, sub_index:0, direction:1, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,]},
+            2004:{orientation:6, main_index:5, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,1,1,1,]},
+            2100:{orientation:5, main_index:5, sub_index:0, direction:1, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            2196:{orientation:6, main_index:5, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,1,1,1,]},
+            2292:{orientation:5, main_index:5, sub_index:0, direction:1, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            2388:{orientation:2, main_index:5, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,]},
+            2484:{orientation:1, main_index:5, sub_index:0, direction:1, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            2580:{orientation:3, main_index:5, sub_index:0, direction:3, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,]},
+            2676:{orientation:4, main_index:5, sub_index:0, direction:3, walk:[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1,]},
+            2772:{orientation:12, main_index:5, sub_index:0, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+        }
+    },
+    object:{
+        prefix:"dttool/output/2/",
+        map:[
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,   0,5844,   0,   0,3828,   0,   0,   0,],
+            [   0,   0,4212,4116,   0,   0,   0,3732,   0,   0,   0,],
+            [   0,   0,   0,4404,1524,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,4308,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,5652, 372, 276,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,5748,   0,   0,   0,   0,],
+            [   0,   0,   0,2676,2580,2484,   0,   0,   0,   0,   0,],
+            [   0,   0,2868,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,3444,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+            [   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,],
+        ],
+        header:{
+            276:{orientation:2, main_index:9, sub_index:12, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,0,0,0,]},
+            372:{orientation:2, main_index:9, sub_index:11, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,]},
+            468:{orientation:12, main_index:50, sub_index:0, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0,]},
+            564:{orientation:12, main_index:9, sub_index:33, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,0,1,1,1,1,0,]},
+            660:{orientation:1, main_index:9, sub_index:33, direction:1, walk:[1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,]},
+            756:{orientation:7, main_index:9, sub_index:33, direction:4, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,1,1,0,]},
+            852:{orientation:12, main_index:9, sub_index:32, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            948:{orientation:12, main_index:9, sub_index:31, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,]},
+            1044:{orientation:1, main_index:9, sub_index:10, direction:1, walk:[0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            1140:{orientation:1, main_index:9, sub_index:9, direction:1, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            1236:{orientation:1, main_index:9, sub_index:8, direction:1, walk:[1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            1332:{orientation:12, main_index:9, sub_index:11, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,]},
+            1428:{orientation:12, main_index:9, sub_index:10, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,]},
+            1524:{orientation:12, main_index:9, sub_index:9, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,]},
+            1620:{orientation:12, main_index:9, sub_index:8, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,]},
+            1716:{orientation:12, main_index:9, sub_index:7, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,]},
+            1812:{orientation:12, main_index:9, sub_index:6, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,]},
+            1908:{orientation:12, main_index:9, sub_index:5, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,]},
+            2004:{orientation:12, main_index:9, sub_index:4, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,]},
+            2100:{orientation:12, main_index:9, sub_index:3, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,]},
+            2196:{orientation:12, main_index:9, sub_index:2, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,]},
+            2292:{orientation:12, main_index:9, sub_index:1, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,]},
+            2388:{orientation:12, main_index:9, sub_index:0, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,]},
+            2484:{orientation:2, main_index:9, sub_index:10, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,]},
+            2580:{orientation:2, main_index:9, sub_index:9, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,]},
+            2676:{orientation:2, main_index:9, sub_index:8, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,]},
+            2772:{orientation:2, main_index:9, sub_index:7, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,]},
+            2868:{orientation:2, main_index:9, sub_index:6, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,]},
+            2964:{orientation:1, main_index:9, sub_index:7, direction:1, walk:[0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            3060:{orientation:1, main_index:9, sub_index:6, direction:1, walk:[0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            3156:{orientation:2, main_index:9, sub_index:5, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,]},
+            3252:{orientation:2, main_index:9, sub_index:4, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,0,]},
+            3348:{orientation:1, main_index:9, sub_index:5, direction:1, walk:[0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            3444:{orientation:1, main_index:9, sub_index:4, direction:1, walk:[0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            3540:{orientation:12, main_index:9, sub_index:30, direction:3, walk:[0,0,0,0,0,0,0,1,0,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0,]},
+            3636:{orientation:12, main_index:9, sub_index:29, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,0,0,]},
+            3732:{orientation:1, main_index:9, sub_index:3, direction:1, walk:[0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            3828:{orientation:1, main_index:9, sub_index:2, direction:1, walk:[1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            3924:{orientation:2, main_index:9, sub_index:3, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,1,]},
+            4020:{orientation:2, main_index:9, sub_index:2, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,]},
+            4116:{orientation:2, main_index:9, sub_index:1, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,]},
+            4212:{orientation:2, main_index:9, sub_index:0, direction:2, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,]},
+            4308:{orientation:1, main_index:9, sub_index:1, direction:1, walk:[0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            4404:{orientation:1, main_index:9, sub_index:0, direction:1, walk:[1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            4500:{orientation:12, main_index:9, sub_index:28, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,]},
+            4596:{orientation:12, main_index:9, sub_index:27, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,]},
+            4692:{orientation:12, main_index:9, sub_index:24, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,]},
+            4788:{orientation:12, main_index:9, sub_index:23, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,]},
+            4884:{orientation:12, main_index:9, sub_index:22, direction:3, walk:[0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,]},
+            4980:{orientation:12, main_index:9, sub_index:21, direction:3, walk:[0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,]},
+            5076:{orientation:12, main_index:9, sub_index:20, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,]},
+            5172:{orientation:12, main_index:9, sub_index:17, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            5268:{orientation:12, main_index:9, sub_index:18, direction:3, walk:[0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            5364:{orientation:12, main_index:9, sub_index:19, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,1,0,0,]},
+            5460:{orientation:12, main_index:9, sub_index:16, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,1,1,0,0,0,]},
+            5556:{orientation:12, main_index:9, sub_index:15, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,]},
+            5652:{orientation:12, main_index:9, sub_index:13, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,]},
+            5748:{orientation:12, main_index:9, sub_index:12, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,]},
+            5844:{orientation:12, main_index:9, sub_index:14, direction:3, walk:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,0,]},
+        }
+    }
+};
+for(var l in level){
+    level[l].tiles={};  
+    for(i in level[l].header) if(!level[l].tiles[i]) level[l].tiles[i]=loadImage(level[l].prefix+i+".png");
+} 
 
 var floor=document.getElementById("floor").getContext("2d");
 floor.w=floor.canvas.width;
 floor.h=floor.canvas.height;
+var tw=160, th=tw/2, s=tw*0.705, a=Math.PI/4, visible=7, asin=acos=Math.sin(a);
 
 var barrelSprite=loadImage("sprite/barrel64.png");
 var coinSprite=loadImage("sprite/coins10.png");
 var potionSprite=loadImage("sprite/potions.png");
-var houseSprite=loadImage("sprite/house.png");
-var tileMap={
-    "0000": loadImage("dirt/dirt0000.png"),
-    "0001": loadImage("dirt/dirt0001.png"),
-    "0010": loadImage("dirt/dirt0010.png"),
-    "0011": loadImage("dirt/dirt0011.png"),
-    "0100": loadImage("dirt/dirt0100.png"),
-    "0101": loadImage("dirt/dirt0101.png"),
-    "0110": loadImage("dirt/dirt0110.png"),
-    "0111": loadImage("dirt/dirt0111.png"),
-    "1000": loadImage("dirt/dirt1000.png"),
-    "1001": loadImage("dirt/dirt1001.png"),
-    "1010": loadImage("dirt/dirt1010.png"),
-    "1011": loadImage("dirt/dirt1011.png"),
-    "1100": loadImage("dirt/dirt1100.png"),
-    "1101": loadImage("dirt/dirt1101.png"),
-    "1110": loadImage("dirt/dirt1110.png"),
-    "1111": loadImage("dirt/dirt1111.png"),
-    "0":    loadImage("dirt/gray.png"),
-};
+
+function isWayWall(x,y){
+    var block_x = Math.floor(x/s),
+        block_y = Math.floor(y/s),
+        ix = Math.floor((x%s)/(s/5)),
+        iy = 4-Math.floor((y%s)/(s/5)),
+        w_inx = iy*5+ix, h, idx;
+    for(var l in level){
+        if(level[l].map[block_y] && (idx=level[l].map[block_y][block_x]) && (h=level[l].header[idx])){
+            if(h.walk[w_inx]==1) return false;
+            else if(h.orientation==3){
+                for(var idx in level.wall.header){
+                    var tb=level.wall.header[idx];
+                    if(tb.main_index==h.main_index && tb.sub_index==h.sub_index && tb.orientation==4 && h.walk[w_inx]==1){
+                        return false;
+                    }
+                }
+            }   
+        }
+    }    
+    return true;
+}
+
+function getFloorTile(x, y) {
+    if(!level.floor.map[y]) return null;
+    if(!level.floor.map[y][x]) return null;
+    var f = level.floor.map[y][x];
+    return level.floor.tiles[f];
+}
+
 var monsterMap={
     SK: {
         A1: loadImage("monsters/SK/A1/map.png",8,16,true),
@@ -100,21 +249,38 @@ var monsterMap={
     }
 };
 
-var hero=new HeroBarbarian(s*1.5,s*1.5);
+var hero=new HeroBarbarian(s*3,s*3);
 setInterval(function(){
-    // restore hero health
     hero.health=Math.min(hero.health+10, hero.origin_health);
 },2000);
 
 // aggresive mobs
-var monsters=[];
-var deathmobs=[];
-for(var i=0;i<10;i++) monsters.push(new AgressiveMob(randomx(),randomy(), 'SK'));
-monsters.push(new AgressiveMob(100,100,'SI'));
-for(var i=0;i<10;i++) monsters.push(new AgressiveMob(randomx(),randomy(), 'FS'));
-for(var i=0;i<10;i++) monsters.push(new AgressiveMob(randomx(),randomy(), 'SI'));
+var monsters=[],deathmobs=[],barrels=[],coins=[],potions=[],walls=[];
+for(var i=0;i<2;i++) monsters.push(new AgressiveMob(randomx(),randomy(), 'SK'));
+for(var i=0;i<2;i++) monsters.push(new AgressiveMob(randomx(),randomy(), 'FS'));
+for(var i=0;i<2;i++) monsters.push(new AgressiveMob(randomx(),randomy(), 'SI'));
+//for(var i=0;i<2;i++) barrels.push(new Barrel(randomx(),randomy()));
+for(var i=0;i<2;i++) potions.push(new PotionHealth(randomx(), randomy()));
+
+for(var y in level.wall.map){
+    for(var x in level.wall.map[y]){
+        var index = level.wall.map[y][x];
+        if(index>0){
+            walls.push(new Wall(index,x*s,y*s));
+        }
+    }
+}
+for(var y in level.object.map){
+    for(var x in level.object.map[y]){
+        var index = level.object.map[y][x];
+        if(index>0){
+            walls.push(new WallObject(index,x*s,y*s));
+        }
+    }
+}
 
 setInterval(function() { // random step for mobs, attack hero
+    if(monsters.length==0)return;
     var m=monsters[Math.ceil(Math.random()*(monsters.length-1))];
     if(typeof m.attacked != "object"){
         m.to_x=m.x+(Math.random()*s-s/2);
@@ -136,20 +302,9 @@ setInterval(function() { // random step for mobs, attack hero
     }
 }, 200);
 
-var barrels=[];
-for(var i=0;i<33;i++) barrels.push(new Barrel(randomx(),randomy()));
-var coins=[];
-var potions=[];
-for(var i=0;i<33;i++) potions.push(new PotionHealth(randomx(), randomy()));
-var houses=[];
-for(var y in floorMap) // pre fetch house;
-    for(var x in floorMap[y])
-        if(floorMap[y][x]=="2")
-            houses.push(new House((parseInt(x)+0.5)*s,(parseInt(y)+0.5)*s));
-
 floor.canvas.onclick=function(e) { 
-    var mx=e.offsetX - floor.w/2;
-    var my=e.offsetY - floor.h/2;
+    var mx=(e.offsetX==undefined?e.layerX:e.offsetX) - floor.w/2;
+    var my=(e.offsetY==undefined?e.layerY:e.offsetY) - floor.h/2;
     var isCanClick=Math.abs(mx) < 100 && Math.abs(my) < 100;
     my *= 2; //unscale
     floor.click_x=hero.x + mx * Math.cos(-a) - my * Math.sin(-a);
@@ -169,16 +324,22 @@ window.onkeydown=function(e){
         }
         return false;
     }
+    if(e.keyCode==9){
+        showMap=!showMap;
+        return false;
+    }
 }
 
+var showMap=false;
 setInterval(function() {
-    if(imageCount) return;
+    if(imageCount>0) return;
     hero.nextStep();
     for(var i in monsters) monsters[i].nextStep();
     floor.fillStyle="black";floor.fillRect(0,0, floor.w,floor.h);
     renderFloor();
     renderHeroHealth()
     renderHeroBelt();
+    if(showMap) renderMap();
 }, 66);
 
 function renderHeroHealth(){
@@ -224,13 +385,13 @@ function renderHeroBelt(){
 
 function loadZb(order,click){
     var tmp_zb=[], zb=[];
-    var all=[click?[]:houses,monsters,potions,barrels,click?[]:[hero]];
+    var all=[monsters,potions,barrels,click?[]:[hero],click?[]:walls];
     for(var t in all) 
         for(var m in all[t]) 
             if(all[t][m].isAboveHero()) 
                 tmp_zb.push(all[t][m]);
     // asc sort
-    tmp_zb.sort(function(a,b){ var c=b.x+b.y-a.x-a.y; return order?c:0-c});
+    tmp_zb.sort(function(a,b){ var c=(b.x+b.offset_x)+(b.y+b.offset_y)-(a.x+a.offset_x)-(a.y+a.offset_y); return order?c:0-c});
     var all=[coins,deathmobs,tmp_zb];
     for(var i in all) for(var j in all[i]) zb.push(all[i][j]);
     return zb;
@@ -265,7 +426,6 @@ function renderObjects(){
             sy=(m.x + m.y)/2*asin+m.offset_y;
         var tile=m.sprite;
         // render sprite
-        if(m.isOverHero && m.isOverHero()) floor.globalAlpha=0.5;
         var tw = tile.width;
         var th = tile.height
         if(tile.steps && tile.angles){
@@ -275,7 +435,7 @@ function renderObjects(){
                 tw*m.step, th*m.angle, tw, th,
                 Math.round(sx-tw/2-tile.offsetX), Math.round(sy-th), tw, th);
         }else{
-            floor.drawImage(tile, Math.round(sx-tile.width/2), Math.round(sy-tile.height));            
+            floor.drawImage(tile, Math.round(sx-tile.width/2)+1, Math.round(sy-tile.height)+1);
         }
         floor.restore()
         // health line
@@ -299,10 +459,10 @@ function renderFloor() {
     floor.translate(floor.w/2-th, floor.h/2);// translate to center
     var fdx=Math.floor(hero.x/s), // hero tile
         fdy=Math.floor(hero.y/s),
-        miny=Math.max(0, fdy-3), // calculate camera visible tiles
-        maxy=Math.min(floorMap.length-1,fdy+3),
-        minx=Math.max(0, fdx-3),
-        maxx=Math.min(floorMap[0].length-1,fdx+3);
+        miny=Math.max(0, fdy-visible), // calculate camera visible tiles
+        maxy=Math.min(level.floor.map.length-1,fdy+visible),
+        minx=Math.max(0, fdx-visible),
+        maxx=Math.min(level.floor.map[0].length-1,fdx+visible);
     // translate to hero
     var mrx=hero.x * acos - hero.y * asin,
         mry=hero.x * asin + hero.y * acos;
@@ -315,7 +475,7 @@ function renderFloor() {
             if(tile){
                 var tx=( x - y ) * th,
                     ty=( x + y ) * th/2;
-                floor.drawImage(tile, tx, ty, tw+1, th+1);                
+                floor.drawImage(tile, tx, ty, tile.width+0.707, tile.height+0.707);
             }
         }
     }
@@ -324,38 +484,28 @@ function renderFloor() {
     floor.restore();
 }
 
-function getFloorTile(x, y) {
-    var f = floorMap[y][x];
-    switch(f){
-        case "2":
-        case "0":
-            return tileMap["0"];
-        case "1":
-            var tileCode="";
-            tileCode+=(isWayFloor(x, y+1)?"1":"0");
-            tileCode+=(isWayFloor(x+1, y)?"1":"0");
-            tileCode+=(isWayFloor(x, y-1)?"1":"0");
-            tileCode+=(isWayFloor(x-1, y)?"1":"0");
-            return tileMap[tileCode];
-        default:
-            return null;
+function renderMap() {
+    floor.save();
+    floor.translate(floor.w/2, floor.h/2);
+    var sc=0.5;
+    floor.scale(1*sc,0.5*sc);
+    floor.rotate(Math.PI*0.25);
+    floor.translate(-hero.x, -hero.y);
+    floor.fillStyle="rgba(0,0,0,0.5)";
+    var wallOffset=[];
+    for(var y=4;y>=0;y--) for(var x=0;x<=4;x++) wallOffset.push({x:x*s/5, y:y*s/5});
+    for(var i in walls){
+        var v=walls[i], walk=v.header.walk;
+        if(v.header.orientation==4)continue;
+        for(var j=0;j<25;j++) if(walk[j]==1) floor.fillRect(v.x+wallOffset[j].x, v.y+wallOffset[j].y, s/5, s/5);
     }
-}
-
-function isWayFloor(x, y) {
-    return floorMap[y] ? floorMap[y][x] == "1" : false;
+    floor.fillRect(hero.x, hero.y, s/5, s/5);
+    floor.restore();
 }
 
 function remove(ar,v){var i=ar.indexOf(v);if(i>=0)ar.splice(i,1);}
-function randomx(){return Math.floor(Math.random()*(floorMap[0].length)*s);}
-function randomy(){return Math.floor(Math.random()*(floorMap.length)*s);}
-
-function isStep(x,y){
-    var dx=Math.floor(x/s), 
-        dy=Math.floor(y/s);
-    var t = floorMap[dy] ? floorMap[dy][dx] : floorMap[dy];
-    return t=="0"||t=="1";
-}
+function randomx(){return Math.floor(Math.random()*(level.floor.map[0].length)*s);}
+function randomy(){return Math.floor(Math.random()*(level.floor.map.length)*s);}
 
 function Shape(sprite,x,y){
     this.x=x;
@@ -364,9 +514,57 @@ function Shape(sprite,x,y){
     this.offset_y=0;
     this.sprite=sprite;
     this.isAboveHero=function(){
-        var maxlen=tw*1.5;
+        var maxlen=tw*visible/2;
         return (Math.abs(this.x-hero.x)<=maxlen) && (Math.abs(this.y-hero.y)<=maxlen);
     };
+}
+
+function BaseWall(sprite,header,x,y){
+    Shape.call(this,sprite,x,y);
+    this.header=header;
+    this.isAboveHero=function(){return true;}
+    this.offset_x-=14;
+    this.offset_y+=82;
+}
+
+function Wall(index,x,y){
+    BaseWall.call(this,level.wall.tiles[index],level.wall.header[index],x,y);
+    switch(this.header.orientation){
+        case 2:
+            this.offset_x+=16;
+            break;
+        case 6:
+            this.offset_x+=16;
+            break;
+        case 5:
+            this.offset_x-=16;
+            break;
+        case 3:
+            for(var inx in level.wall.header){
+                var h = level.wall.header[inx];
+                if(h.orientation==4 && h.main_index==this.header.main_index && h.sub_index==this.header.sub_index){
+                    walls.push(new Wall(inx, x, y))
+                    break;
+                }
+            }
+            this.offset_x+=16;
+            break;
+        case 4:
+            this.offset_x-=16;
+            break;
+    }
+}
+
+function WallObject(index,x,y){
+    BaseWall.call(this,level.object.tiles[index],level.object.header[index],x,y);
+    this.offset_x+=16;
+    var self=this;
+    load(this.sprite, function(){
+        if(self.sprite.width<160){
+            self.offset_x-=(160-self.sprite.width)/2
+        }
+    })
+    
 }
 
 function DeathMob(mob){
@@ -378,21 +576,6 @@ function DeathMob(mob){
         if(!this.used && Math.random()>0.5) coins.push(new Coin(this.x+50, this.y+50));
         if(!this.used && Math.random()>0.5) potions.push(new PotionHealth(this.x+50, this.y));
         this.used=true;
-    }
-}
-
-function House(x,y){
-    Shape.call(this,houseSprite,x,y);
-    this.offset_y=th/2;
-    this.isOverHero=function(){
-        var hx=(hero.x - hero.y) * acos,
-            hy=(hero.x + hero.y)/2 * asin;
-        var sx=(this.x - this.y) * acos,
-            sy=(this.x + this.y)/2 * asin;
-        return (hx >= sx-houseSprite.width/2)
-            && (hx <= sx+houseSprite.width/2)
-            && (hy >= sy+this.offset_y-houseSprite.height)
-            && (hy <= sy)
     }
 }
 
@@ -436,6 +619,7 @@ function PotionHealth(x,y){
 }
 
 function Mob(x,y,name){
+    this.to_x=x;this.to_y=y;
     this.name=name;
     this.stay=monsterMap[name].NU
     this.run=monsterMap[name].WL
@@ -446,7 +630,7 @@ function Mob(x,y,name){
     this.st=8;
     Shape.call(this, this.currentState, x, y);
     this.rotate = function(sx,sy){
-        var l=this.run.angles;
+        var l=this.currentState.angles;
         this.angle=Math.round((Math.atan2(sy, sx)/Math.PI+2.75)*l/2+l/2)%l
     }
     this.rotateTo = function(point){
@@ -459,36 +643,29 @@ function Mob(x,y,name){
         }
     }
     this.nextStep=function(){
-        var sx=dx=(this.to_x - this.x),
-            sy=dy=(this.to_y - this.y),
-            st=this.st, 
-            x=this.x, y=this.y;
-        
-        if(Math.abs(dx)>st || Math.abs(dy)>st){ 
-            sx=st * dx / Math.sqrt((dx*dx) + (dy*dy));
-            sy=sx * dy / dx;
-        }
-        var run=false;
-        if(isStep(x+sx,y+sy)){run=true;}
-        else if(isStep(this.x,y+sy)){run=true;sx=0;}
-        else if(isStep(x+sx,this.y)){run=true;sy=0;}
-        if(Math.sqrt((sx*sx)+(sy*sy))>5){
-            x += sx;
-            y += sy;
-            if(run){
-                this.x=x;
-                this.y=y;
+        var dx=(this.to_x - this.x),
+            dy=(this.to_y - this.y);
+        if((Math.sqrt((dx*dx)+(dy*dy)))>this.st){ // run
+            var tx=0;ty=0;
+            for(var st=0;st<this.st;st+=0.01){
+                var sx=st * dx / Math.sqrt((dx*dx) + (dy*dy));
+                var sy=sx * dy / dx;
+                if(isWayWall(this.x+sx,this.y+sy)){tx=sx;ty=sy;}
+                else break;
+            }
+            this.rotate(tx, ty);
+            if(Math.sqrt((tx*tx)+(ty*ty))>=this.st/2){
+                this.x+=tx;
+                this.y+=ty;
                 this.setState(this.run);
             }
-            else this.setState(this.stay);
-            this.rotate(sx,sy);
-        }
-        else this.setState(this.stay);
+            else{ this.setState(this.stay); this.x+=tx;this.y+=ty;this.to_x=this.x;this.to_y=this.y;}
+        } else{ this.setState(this.stay); this.to_x=this.x;this.to_y=this.y;}
         this.step=(this.step+1)%(this.currentState.steps);
         this.sprite=this.currentState;
     }
     this.origin_health=this.health=1000;
-    this.resistance=10 // damage resistance, less than 1000
+    this.resistance=10; // damage resistance, less than 1000
     this.use = function(mob){
         if(mob.doAttack) mob.doAttack(this);
     };
@@ -523,8 +700,8 @@ function AgressiveMob(x,y,name){
             }
             this.step=(this.step+1)%(this.currentState.steps);
             this.sprite=this.currentState;
-            this.offset_y=this.currentState==this.attack?this.attackOffset:this.normalOffset;
         }else this._nextStep();
+        this.offset_y=this.currentState==this.attack?this.attackOffset:this.normalOffset;
     }
     this.currentDamage=30;
     this.getDamage=function(){
@@ -542,8 +719,8 @@ function AgressiveMob(x,y,name){
 
 function HeroBarbarian(x,y){
     AgressiveMob.call(this,x,y,"BA");
-    this.attackOffset=35;
-    this.normalOffset=5;
+    this.attackOffset=40;
+    this.normalOffset=10;
     this.health=this.origin_health=1000;
     this.belt={items:[], size:10};
     this.st=16;
